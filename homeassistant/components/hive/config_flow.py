@@ -150,8 +150,8 @@ class HiveOptionsFlowHandler(config_entries.OptionsFlow):
         """Handle a flow initialized by the user."""
         if user_input is not None:
             new_interval = user_input[CONF_SCAN_INTERVAL]
-            if new_interval < 15:
-                new_interval = 15
+            if new_interval < 30:
+                new_interval = 30
                 user_input[CONF_SCAN_INTERVAL] = new_interval
 
             await self.hive.updateInterval(new_interval)
