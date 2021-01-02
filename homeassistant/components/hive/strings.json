@@ -37,6 +37,7 @@
     "step": {
       "user": {
         "title": "Options for Hive",
+        "description": "Update the scan interval to poll for data more often. This configuration cannot be set lower than 30 seconds",
         "data": {
           "scan_interval": "Scan Interval (Seconds)",
           "debug": "Select categories to debug"
