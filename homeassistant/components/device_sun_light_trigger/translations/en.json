@@ -1,0 +1,32 @@
+{
+    "config": {
+        "step": {
+            "user": {
+                "title": "Presence-based Lights",
+                "description": "Enter Presence-based Lights data.",
+                "data": {
+                    "device_group": "Select device group.",
+                    "light_group": "Select light group.",
+                    "light_profile": "Select light profile.",
+                    "disable_turn_off": "Disable light turn off."
+                }
+            }
+        },
+        "error": {},
+        "abort": {
+            "already_configured": "Account is already configured"
+        }
+    },
+    "options": {
+        "step": {
+            "user": {
+                "title": "Options for Presence-based Lights",
+                "description": "Update Presence-based Lights data.",
+                "data": {
+                    "light_profile": "Select light profile.",
+                    "disable_turn_off": "Disable light turn off."
+                }
+            }
+        }
+    }
+}

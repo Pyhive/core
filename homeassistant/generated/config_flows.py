@@ -48,6 +48,7 @@ FLOWS = [
     "daikin",
     "deconz",
     "denonavr",
+    "device_sun_light_trigger",
     "devolo_home_control",
     "dexcom",
     "dialogflow",

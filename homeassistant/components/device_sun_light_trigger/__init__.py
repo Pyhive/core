@@ -4,6 +4,7 @@ import logging
 
 import voluptuous as vol
 
+from homeassistant import config_entries
 from homeassistant.components.light import (
     ATTR_PROFILE,
     ATTR_TRANSITION,
@@ -20,6 +21,7 @@ from homeassistant.const import (
     SUN_EVENT_SUNSET,
 )
 from homeassistant.core import callback
+from homeassistant.helpers import device_registry as dr
 import homeassistant.helpers.config_validation as cv
 from homeassistant.helpers.event import (
     async_track_point_in_utc_time,
@@ -60,11 +62,33 @@ CONFIG_SCHEMA = vol.Schema(
 
 async def async_setup(hass, config):
     """Set up the triggers to control lights based on device presence."""
+    if DOMAIN not in config:
+        return True
+
     conf = config[DOMAIN]
-    disable_turn_off = conf[CONF_DISABLE_TURN_OFF]
-    light_group = conf.get(CONF_LIGHT_GROUP)
-    light_profile = conf[CONF_LIGHT_PROFILE]
-    device_group = conf.get(CONF_DEVICE_GROUP)
+
+    if not hass.config_entries.async_entries(DOMAIN):
+        hass.async_create_task(
+            hass.config_entries.flow.async_init(
+                DOMAIN, context={"source": config_entries.SOURCE_IMPORT}, data=conf
+            )
+        )
+    return True
+
+
+async def async_setup_entry(hass, entry):
+    """Set up Hive from a config entry."""
+
+    data = dict(entry.data)
+    options = dict(entry.options)
+    data.update(options)
+
+    hass.config_entries.async_update_entry(entry, data=data, options=options)
+
+    light_group = data.get(CONF_LIGHT_GROUP)
+    light_profile = data[CONF_LIGHT_PROFILE]
+    device_group = data.get(CONF_DEVICE_GROUP)
+    disable_turn_off = data[CONF_DISABLE_TURN_OFF]
 
     async def activate_on_start(_):
         """Activate automation."""
@@ -77,6 +101,21 @@ async def async_setup(hass, config):
     else:
         hass.bus.async_listen_once(EVENT_HOMEASSISTANT_START, activate_on_start)
 
+    device_registry = await dr.async_get_registry(hass)
+
+    device_registry.async_get_or_create(
+        config_entry_id=entry.entry_id,
+        identifiers={(DOMAIN, entry.unique_id)},
+        name="Presence-based Lights",
+        manufacturer="homeassistant",
+        entry_type="service",
+    )
+
+    return True
+
+
+async def async_unload_entry(hass, entry):
+    """Unload a config entry."""
     return True
 
 
